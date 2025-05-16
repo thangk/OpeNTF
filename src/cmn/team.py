@@ -255,8 +255,7 @@ class Team(object):
                     batch_array = np.vstack(one_hot_arrays) if one_hot_arrays else np.zeros((0, total_dim), dtype='u1')
                     gpu_tensor_batches.append(torch.from_numpy(batch_array).to(device))
                 
-                # Convert back to sparse matrix for validation
-                if gpu_tensor_batches: data = scipy.sparse.lil_matrix((torch.vstack(gpu_tensor_batches)).cpu().numpy())
+                if gpu_tensor_batches: data = scipy.sparse.lil_matrix(torch.vstack(gpu_tensor_batches).cpu().numpy(), dtype='u1')
                 else: data = scipy.sparse.lil_matrix((0, total_dim), dtype='u1')
                 
             # serial
