@@ -2,6 +2,15 @@ import argparse
 import torch
 import pickle
 import numpy as np
+import sys
+import pkgmgr as opentf
+import yaml
+
+sys.path.append('/home/thangk/msc/OpeNTF-main/src')
+
+with open('/home/thangk/msc/OpeNTF-main/src/config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+torch = opentf.install_import(config['data']['pytorch'], 'torch')
 
 def main():
     parser = argparse.ArgumentParser(description="Compare two .pkl files (teamsvecs assumed)")
