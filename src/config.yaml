@@ -7,7 +7,6 @@ hydra:
     dir: . #unix or macos
     #dir: /dev/null # windows
 seed: 0
-pytorch: torch==2.2.2 #--index-url https://download.pytorch.org/whl/cu124
 cmd:
   - prep
   - train
@@ -17,6 +16,7 @@ cmd:
   #- agg
   #- fair
 data: #required for 'prep' step
+  pytorch: torch==2.2.2 #--index-url https://download.pytorch.org/whl/cu124
   domain:
     #cmn.publication.Publication
     #cmn.movie.Movie
