@@ -3,12 +3,12 @@ import torch
 import pickle
 import numpy as np
 import sys
-import pkgmgr as opentf
 import yaml
 
-sys.path.append('/home/thangk/msc/OpeNTF-main/src')
+sys.path.append('../src')
+import pkgmgr as opentf
 
-with open('/home/thangk/msc/OpeNTF-main/src/config.yaml', 'r') as file:
+with open('../src/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 torch = opentf.install_import(config['data']['pytorch'], 'torch')
 
