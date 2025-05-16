@@ -236,25 +236,27 @@ class Team(object):
                 data = scipy.sparse.vstack(data, 'lil')#{'bsr', 'coo', 'csc', 'csr', 'dia', 'dok', 'lil'}, By default an appropriate sparse matrix format is returned!!
 
             elif 'acceleration' in cfg and 'cuda' in cfg.acceleration:
-                torch = opentf.install_import(cfg.pytorch, 'torch')
-                
-                device_id_str = cfg.acceleration.split(':', 1)[1].split(',')[0].strip() if ':' in cfg.acceleration else ','.join(str(i) for i in range(torch.cuda.device_count()))
+                import torch
+
+                device_id_str = cfg.acceleration.split(':', 1)[1].split(',')[0].strip() if ':' in cfg.acceleration else '0'
                 device = torch.device(f'cuda:{device_id_str}')
                 log.info(f'Using GPU: {device} for team vector processing.')
 
                 s2i, c2i, l2i = indexes['s2i'], indexes['c2i'], indexes['l2i']
                 total_dim = len(s2i) + len(c2i) + len(l2i)
-                
+
                 gpu_tensor_batches = []
                 for i in range(0, len(teams), cfg.bucket_size):
                     batch = teams[i:min(i + cfg.bucket_size, len(teams))]
                     if not batch: continue
-                    
+
                     # Process batch and send to GPU
                     one_hot_arrays = [team.get_one_hot(s2i, c2i, l2i, cfg.location) for team in batch]
                     batch_array = np.vstack(one_hot_arrays) if one_hot_arrays else np.zeros((0, total_dim), dtype='u1')
                     gpu_tensor_batches.append(torch.from_numpy(batch_array).to(device))
-                
+
+                # Convert back to sparse matrix for validation
+                if gpu_tensor_batches: data = scipy.sparse.lil_matrix((torch.vstack(gpu_tensor_batches)).cpu().numpy())
                 if gpu_tensor_batches: data = scipy.sparse.lil_matrix(torch.vstack(gpu_tensor_batches).cpu().numpy(), dtype='u1')
                 else: data = scipy.sparse.lil_matrix((0, total_dim), dtype='u1')
                 
